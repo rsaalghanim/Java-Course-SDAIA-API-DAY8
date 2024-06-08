@@ -5,6 +5,7 @@ import org.example.dao.EmployeeDAO;
 import org.example.dto.EmployeeDto;
 import org.example.dto.EmployeeFilterDto;
 import org.example.dto.JobDto;
+import org.example.exceptions.DataNotFoundException;
 import org.example.models.Employee;
 import org.example.models.job;
 
@@ -33,6 +34,7 @@ public class EmpController {
                             .ok(emps)
                             .type(MediaType.APPLICATION_XML)
                             .build();
+
               //  return dao.selectAllJobs(minsal, limit, offset);
                 //return dao.selectAllEmps(filter);
                 //return dao.selectAllEmps();
@@ -54,11 +56,19 @@ public class EmpController {
 
         @GET
         @Path("{employee_id}")
+        @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, "text/csv"} )
         public Response getEmployee(
-                @PathParam("employee_id") int employee_id) {
+                @PathParam("employee_id") int employee_id) throws SQLException{
 
             try {
                 Employee emps = dao.selectEmp(employee_id);
+
+
+                if (emps == null) {
+                    throw new DataNotFoundException("Employee " + employee_id + " Not found");
+
+                }
+
                 if(headers.getAcceptableMediaTypes().contains(MediaType.valueOf(MediaType.APPLICATION_XML))) {
                     return Response
                             .ok(emps)
@@ -78,26 +88,39 @@ public class EmpController {
                 dto.setManager_id(emps.getManager_id());
                 dto.setDepartment_id(emps.getDepartment_id());
                 addLinks(dto);
+
                 return Response.ok(dto).build();
-            } catch (Exception e) {
+            }
+            catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
         }
+
+
 
     private void addLinks (EmployeeDto dto){
         URI selfUri = uriInfo.getAbsolutePath();
         URI empsUri = uriInfo.getAbsolutePathBuilder().path(EmpController.class).build();
 
         dto.addLink(selfUri.toString(), "self");
-        dto.addLink(empsUri.toString(),"employees");
+        dto.addLink(empsUri.toString(),"jobs");
     }
 
         @DELETE
         @Path("{employee_id}")
-        public void deleteEmployee(@PathParam("employee_id") int employee_id) {
+        public Response deleteEmployee(
+                @PathParam("employee_id") int employee_id) {
 
             try {
                 dao.deleteEmp(employee_id);
+                if(headers.getAcceptableMediaTypes().contains(MediaType.valueOf(MediaType.APPLICATION_XML))) {
+                    return Response
+                            .ok()
+                            .type(MediaType.APPLICATION_XML)
+                            .build();
+//
+                }
+                return Response.ok().build();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -114,7 +137,7 @@ public class EmpController {
                 return Response
                         .created(uri)
                         .cookie(cookie)
-                        .header("Created by", "Wael")
+                        .header("Created by", "Ragad Alghanim")
                         .build();
                // dao.insertEmp(emps);
             } catch (Exception e) {
@@ -124,11 +147,21 @@ public class EmpController {
 
         @PUT
         @Path("{employee_id}")
-        public void updateEmployee(@PathParam("employee_id") int employee_id, Employee emps) {
+        @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, "text/csv"})
+        public Response updateEmployee(
+                @PathParam("employee_id") int employee_id, Employee emps) {
 
             try {
                 emps.setEmployee_id(employee_id);
                 dao.updateEmp(emps);
+                if(headers.getAcceptableMediaTypes().contains(MediaType.valueOf(MediaType.APPLICATION_XML))) {
+                    return Response
+                            .ok(emps)
+                            .type(MediaType.APPLICATION_XML)
+                            .build();
+//
+                }
+                return Response.ok(emps).build();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

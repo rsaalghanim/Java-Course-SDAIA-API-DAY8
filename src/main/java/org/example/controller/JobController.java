@@ -87,7 +87,7 @@ addLinks(dto);
 
         private void addLinks (JobDto dto){
             URI selfUri = uriInfo.getAbsolutePath();
-            URI empsUri = uriInfo.getAbsolutePathBuilder().path(EmpController.class).build();
+            URI empsUri = uriInfo.getAbsolutePathBuilder().path(JobController.class).build();
 
             dto.addLink(selfUri.toString(), "self");
             dto.addLink(empsUri.toString(),"employees");
