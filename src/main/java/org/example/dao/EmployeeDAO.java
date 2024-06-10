@@ -5,6 +5,8 @@ import  org.example.models.Employee;
 
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.Year;
 import java.util.ArrayList;
 
 public class EmployeeDAO {
@@ -12,7 +14,7 @@ public class EmployeeDAO {
     private static final   String URL = "jdbc:sqlite:C:\\Users\\dev\\IdeaProjects\\untitled9\\src\\main\\java\\HW4\\hr.db";
     private static final String INSERT_EMP = "insert into employees values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String SELECT_ONE_EMP = "select * from employees where employee_id = ?";
-    private static final String SELECT_EMP_WITH_DATE = "select * from employees where hire_date = ?";
+    private static final String SELECT_EMP_WITH_DATE = "select * from employees where hire_date LIKE ? || '%'";
     private static final String SELECT_EMP_WITH_JOB = "select * from employees where job_id = ?";
     private static final String SELECT_EMP_WITH_DEP = "select * from employees where department_id = ?";
     private static final String SELECT_EMP_WITH_DEP_PAGINATION = "select * from employees where department_id = ? order by employee_id limit ? offset ?";
