@@ -23,7 +23,7 @@ public class EmployeeDAO {
     private static final String UPDATE_EMP = "update employees set email = ?, salary = ? where employee_id = ?";
     private static final String DELETE_EMP = "delete from employees where employee_id = ?";
 
-
+//
     public void insertEmp(Employee e) throws SQLException, ClassNotFoundException {
         Class.forName("org.sqlite.JDBC");
         Connection conn = DriverManager.getConnection(URL);
